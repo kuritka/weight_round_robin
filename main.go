@@ -15,6 +15,7 @@ func sampleVec(cdf []float32) (vec []int) {
 		for r > cdf[bucket] {
 			bucket++
 		}
+
 		mvec[bucket] = true
 		vec = append(vec, bucket)
 	}
