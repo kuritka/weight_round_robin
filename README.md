@@ -7,10 +7,10 @@ See PDF [30 40 20 10]: The item with the highest probability (index 01) will occ
     [10.0.0.1],[10.1.0.1],[10.2.0.1],[10.3.0.1]
     [30 40 20 10]
     -----------------
- 0. [291 394 218 97] 
- 1. [322 306 235 137] 
- 2. [286 223 305 186] 
- 3. [182 73 231 514] 
+ 0. [289 401 200 110] 
+ 1. [298 315 258 129] 
+ 2. [291 216 307 186] 
+ 3. [122 68 235 575] 
 ```
 See what DNS query returns :
 
@@ -24,14 +24,13 @@ See what DNS query returns :
 
 
 The example matrix was created by 1000x hitting the list of IP adresses with help of WRR. 
-The IP at zero index (10.0.0.1) is used 291x on the zero position returned by DNS server.
-Also 322x used used on the first position returned by DNS server.
+The IP at zero index (10.0.0.1) is used 289x on the first position returned by DNS server.
+Also 298x used on the second position returned by DNS server.
 
-The address (10.3.0.1) has only 10% probability of to be chosen. It occurs only 97x (cca 10%) on the zero position 
-while 514x on the last position. 
+The address (10.3.0.1) has only 10% probability of to be chosen. It occurs only 110x (cca 10%) on the zero position 
+while 575x on the last position. 
 
-
-
+The index was calculated 1000 times. When you add individual columns or rows, the result is always 1000, so everything is OK
 
 # WRR From Query To k8gb 
 

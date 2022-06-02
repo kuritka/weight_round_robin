@@ -58,7 +58,7 @@ func (w *WRR) Pick() (indexes []int) {
 func (w *WRR) pick(cdf []int, n int) int {
 	r := rand.Intn(n)
 	index := 0
-	for r > cdf[index] {
+	for r >= cdf[index] {
 		index++
 	}
 	return index
