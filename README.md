@@ -1,7 +1,39 @@
 # wrr DEMO
 
+Weight round robin alghoritm produces indexes by predefined weights.
 
-# From Query To k8gb config
+See PDF [30 40 20 10]: The item with the highest probability (index 01) will occur more often at the 01 position that has the highest probability in the PDF
+```txt
+    [10.0.0.1],[10.1.0.1],[10.2.0.1],[10.3.0.1]
+    [30 40 20 10]
+    -----------------
+ 0. [291 394 218 97] 
+ 1. [322 306 235 137] 
+ 2. [286 223 305 186] 
+ 3. [182 73 231 514] 
+```
+See what DNS query returns :
+
+```shell
+# dig @localhost -p 1053 wrr.cloud.example.com +short
+10.1.0.1
+10.0.0.1
+10.3.0.1
+10.2.0.1
+```
+
+
+The example matrix was created by 1000x hitting the list of IP adresses with help of WRR. 
+The IP at zero index (10.0.0.1) is used 291x on the zero position returned by DNS server.
+Also 322x used used on the first position returned by DNS server.
+
+The address (10.3.0.1) has only 10% probability of to be chosen. It occurs only 97x (cca 10%) on the zero position 
+while 514x on the last position. 
+
+
+
+
+# WRR From Query To k8gb 
 
 ## DNS Query
 ```shell
@@ -32,9 +64,6 @@ app.cloud.example.com.             300      IN      A       10.0.0.1
 ```
 
 ## CoreDNS side
-**ZONE** specifies under which name the loadbalancing should be performed. If the zone is `.`, it will be executed over everything.
-
-loadbalance weight_round_robin declares how the individual ranges are loadbalanced. All out-of-range addresses are divided by the range that was not declared.
 
 ```shell
 # example configuration. For real k8gb config see: 
@@ -42,10 +71,7 @@ loadbalance weight_round_robin declares how the individual ranges are loadbalanc
 app.cloud.example.com:8053 {
     hosts etchosts
     log
-    loadbalance weight_round_robin {
-        10.0.0.0/16 0.8
-        10.1.0.0/16 0.2
-    }
+    loadbalance weight_round_robin
 }
 # 1 - 0.8 - 0.2 = 0 everything out of range is divided by a 
 # probability of 0%
@@ -54,7 +80,6 @@ amazon.com {
     hosts etchosts
     log
     loadbalance weight_round_robin {
-        176.32.103.205/32 0.6
     }
 }
 # 1 - 0.6 = 0.4 everything out of 176.32.103.205 is divided by a
@@ -83,7 +108,6 @@ spec:
               path: /
   strategy: roundRobin 
     weight: 80%
-    range: 10.0.0.0/16
 ```
 
 ```yaml
@@ -107,7 +131,6 @@ spec:
               path: /
   strategy: roundRobin 
     weight: 20%
-    range: 10.1.0.0/16
 ```
 
 ```yaml
@@ -129,8 +152,7 @@ spec:
                 servicePort: http
               path: /
   strategy: roundRobin 
- # not sure what to set here atm. (10.10.10.10/32)  
-```
+ # not sure what to set here atm. 
 
 # Expected result
 The 1000x executed `dig app.cloud.example.com` would return
