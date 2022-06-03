@@ -6,7 +6,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/kuritka/weight_round_robin)](https://goreportcard.com/report/github.com/kuritka/weight_round_robin?branch=main)
 
 
-This library provides a Weight Round Robin supporting function which achieves both uniformity and consistency.
+This library provides a Weight Shuffling support function which chieves both performance and simplicity.
 
 For detailed information about the concept, you should take a look at the following resources:
  - [CDF x PDF](https://www.statology.org/cdf-vs-pdf/) 
