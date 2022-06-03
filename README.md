@@ -20,6 +20,14 @@ go get github.com/kuritka/wrr
 
 ## Pick() Usage
 
+```go
+// pdf requires to be 100% in total.  
+pdf := []int{30, 40, 20, 10}
+// handle error in real code
+wrr, _ := NewWRR(pdf)
+// the index is selected from the probability determined by the pdf 
+index := wrr.Pick()
+```
 If you don't remember [the probability](https://www.statology.org/cdf-vs-pdf/) right now, that's okay.
 PDF is a simple slice that contains percentages. Depending on how the percentages are divided, the function will 
 return an index. For example, for PDF={5,90,5}, the function will return 1 in about 90 out of 100 cases, 
