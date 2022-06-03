@@ -9,7 +9,7 @@ For detailed information about the concept, you should take a look at the follow
 ## Table of Content
  - [Install](#install)
  - [Pick() Usage](#pick-usage)
- - [PickSlice() Usage](#pickslice-usage)
+ - [PickVector() Usage](#pickvector-usage)
  - [Examples](#examples)
 
 ## Install
@@ -35,10 +35,10 @@ while it will return 0 or 2 in about 10 out of 100 cases.
 
 **The only condition is that the sum of all values in the PDF is always equal to 100!**
 
-## PickSlice() Usage
+## PickVector() Usage
 A bit more complex case is when you need to shuffle the indexes in the array to match the PDF instead of one element. 
 The PDF again contains the same percentage distribution, but we want the slice to contain not one index, but the whole 
-vector. For example, for PDF={30,40,20,10} the result will be like this:
+vector. For example, for `PDF={30,40,20,10}` the result will be like this:
 
 ```
 [2,1,3,0]
@@ -60,7 +60,7 @@ of addresses):
 10.3.0.1
 ```
 
-We want to shuffle the addresses in PDF order [30 40 20 10]: The item with the highest probability (index 01 = 40%) will
+We want to shuffle the addresses in PDF order `[30 40 20 10]`: The item with the highest probability (index 01 = 40%) will
 occur more often at the 01 position that has the highest probability in the PDF.
 
 ```txt
@@ -75,11 +75,47 @@ occur more often at the 01 position that has the highest probability in the PDF.
 
 The example matrix was created by 1000x hitting the list of IP adresses with help of WRR.
 If we map the indexes to a slice with IP addresses (or groups of IP addresses) the IP at 
-zero index (10.0.0.1) is used 289x on the first position returned by DNS server (e.g: [10.0.0.1, 10.1.0.1, 10.2.0.1, 10.3.0.1]).
-Also 298x used on the second position (e.g: [10.1.0.1, 10.0.0.1, 10.3.0.1, 10.2.0.1]).
+zero index (`10.0.0.1`) is used 289x on the first position returned by DNS server (e.g: `[10.0.0.1, 10.1.0.1, 10.2.0.1, 10.3.0.1]`).
+Also 298x used on the second position (e.g: `[10.1.0.1, 10.0.0.1, 10.3.0.1, 10.2.0.1]`).
 
-The address (10.3.0.1) has only 10% probability of to be chosen. It occurs only 110x (cca 10%) on the zero position 
+The address (`10.3.0.1`) has only 10% probability of to be chosen. It occurs only 110x (cca 10%) on the zero position 
 while 575x on the last position. 
 
 The index was calculated 1000 times. When you sum individual columns or rows, the result is always 1000x so everything 
-is  mathematically OK.
+is  mathematically OK. Let me add a few more examples.
+
+#### 100%
+Let's say we set `pdf={0,0,100,0}` (the sum of PDF must always be 100!).
+The `PickVecor` function will always generate this indexes: `[2 1 0 3]`, so for our IP addresses they will always be 
+sorted like this: `[10.2.0.1,10.1.0.1,10.0.0.1,10.3.0.1]`.  This is the result matrix
+```
+    [10.0.0.1],[10.1.0.1],[10.2.0.1],[10.3.0.1]
+    [0 0 100 0]
+    -----------------
+ 0. [0 0 100 0] 
+ 1. [0 100 0 0] 
+ 2. [100 0 0 0] 
+ 3. [0 0 0 100] 
+```
+
+#### 50% / 50%
+the last case is a bit redundant, although very explanatory. Let's say we have `pdf={50,50}`. 
+The generated wil look like following:
+```
+[0 1]
+[1 0]
+[0 1]
+[1 0]
+[0 1]
+[0 1]
+[1 0]
+[1 0]
+...
+
+    [10.0.0.1],[10.1.0.1]
+    [50 50]
+    -----------------
+ 0. [511 489] 
+ 1. [489 511] 
+```
+The address `10.0.0.1` occurred 511 times in `1000` hits at index zero , while 489 times at index 1. 

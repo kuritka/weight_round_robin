@@ -34,6 +34,9 @@ func TestInit(t *testing.T) {
 		{"out of range value 1", []int{101, 2}, false},
 		{"out of range value 2", []int{30, 40, 20, 10, -10, 10}, false},
 		{"zero", []int{0}, false},
+		{"hundred", []int{0,0,100}, true},
+		{"hundred", []int{100, 0}, true},
+		{"hundred", []int{100}, true},
 	}
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("%s: %v", test.name, test.pdf), func(t *testing.T) {
@@ -57,9 +60,13 @@ func TestPick(t *testing.T) {
 		{"happy distribution", []int{30, 40, 20, 10}, 5},
 		{"50/50 distribution ", []int{50, 50}, 5},
 		{"one element ", []int{100}, 0},
-		{"twenty elements", []int{5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5}, 2},
+		{"twenty elements", []int{5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5}, 3},
 		{"strongly unbalanced", []int{90, 2, 2, 2, 2, 2}, 2},
+		{"strongly unbalanced2", []int{1,99}, 1},
 		{"one zero", []int{100, 0}, 0},
+		{"multiple zeros", []int{100, 0, 0}, 0},
+		{"multiple zeros", []int{0, 100, 0}, 0},
+		{"multiple zeros", []int{0, 0, 100}, 0},
 	}
 
 	for _, test := range tests {
@@ -75,7 +82,61 @@ func TestPick(t *testing.T) {
 			sum := sum(result)
 			assert.Equal(t, sum, n)
 			b := checkAllowedDiff(test.pdf, result, sum, test.allowedMaxDiffPct)
-			assert.True(t, b)
+			assert.True(t, b, "crossed maximum allowed diff", result)
+		})
+	}
+}
+
+
+func TestPickVector(t *testing.T) {
+	const n = 1000
+	tests := []struct {
+		name              string
+		pdf               []int
+		allowedMaxDiffPct int
+	}{
+		{"happy distribution", []int{30, 40, 20, 10}, 5},
+		{"50/50 distribution ", []int{50, 50}, 5},
+		{"one element ", []int{100}, 0},
+		{"twenty elements", []int{5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5}, 3},
+		{"strongly unbalanced", []int{90, 2, 2, 2, 2, 2}, 2},
+		{"one zero", []int{100, 0}, 0},
+		{"multiple zeros", []int{100, 0, 0}, 0},
+		{"multiple zeros", []int{0, 100, 0}, 0},
+		{"multiple zeros", []int{0, 0, 100}, 0},
+		{"multiple zeros", []int{0, 0, 0, 100, 0, 0}, 0},
+	}
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("%s: %v", test.name, test.pdf), func(t *testing.T) {
+			wrr, err := NewWRR(test.pdf)
+			require.NoError(t, err)
+
+			result := map[int][]int{}
+			for i := 0; i < len(test.pdf); i++ {
+				result[i] = make([]int, len(test.pdf))
+			}
+
+			for i := 0; i < n; i++ {
+
+				indexes := wrr.PickVector()
+				for _,v := range indexes {
+					assert.True(t, v >= 0 && v < len(test.pdf), "Pick returned index out of range")
+				}
+
+				for i := 0; i < len(test.pdf); i++ {
+					result[i][indexes[i]]++
+				}
+			}
+
+			for i := 0; i < len(test.pdf); i++ {
+				verticalSum := 0
+				horizontalSum := sum(result[i])
+				for _,v := range result {
+					verticalSum += v[i]
+				}
+				assert.Equal(t, horizontalSum, n)
+				assert.Equal(t, verticalSum, n)
+			}
 		})
 	}
 }
@@ -101,8 +162,8 @@ func checkAllowedDiff(pdf, result []int, sum int, diffPercent int) bool {
 	return true
 }
 
-func TestRRWeight(t *testing.T) {
-	pdf := []int{30, 40, 20, 10}
+func TestPrintMatrix(t *testing.T) {
+	pdf := []int{50,50}
 	wrr, err := NewWRR(pdf)
 	if err != nil {
 		fmt.Println("ERROR:", err)
@@ -114,12 +175,11 @@ func TestRRWeight(t *testing.T) {
 	}
 
 	for i := 0; i < 1000; i++ {
-		indexes := wrr.PickSlice()
+		indexes := wrr.PickVector()
 		fmt.Println(indexes)
-		result[0][indexes[0]]++
-		result[1][indexes[1]]++
-		result[2][indexes[2]]++
-		result[3][indexes[3]]++
+		for q := 0; q< len(pdf); q++ {
+			result[q][indexes[q]]++
+		}
 	}
 
 	fmt.Printf("    [10.0.0.1],[10.1.0.1],[10.2.0.1],[10.3.0.1]\n")

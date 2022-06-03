@@ -22,13 +22,18 @@ import (
 
 // WRR Weight Round Robin Alghoritm
 type WRR struct {
-	pdf []int
+	pdf      []int
+	index100 int
 }
 
 // NewWRR instantiate weight round robin
 func NewWRR(pdf []int) (wrr *WRR, err error) {
 	r := 0
-	for _, v := range pdf {
+	max100 := -1
+	for i, v := range pdf {
+		if v == 100 {
+			max100 = i
+		}
 		r += v
 		if v < 0 || v > 100 {
 			return wrr, fmt.Errorf("value %v out of range [0;100]", v)
@@ -40,14 +45,19 @@ func NewWRR(pdf []int) (wrr *WRR, err error) {
 	rand.Seed(time.Now().UnixNano())
 	wrr = new(WRR)
 	wrr.pdf = pdf
+	wrr.index100 = max100
 	return wrr, nil
 }
 
-// PickSlice returns slice shuffled by pdf distribution.
+// PickVector returns slice shuffled by pdf distribution.
 // The item with the highest probability will occur more often
 // at the position that has the highest probability in the PDF
 // see README.md
-func (w *WRR) PickSlice() (indexes []int) {
+func (w *WRR) PickVector() (indexes []int) {
+	if w.index100 != -1 {
+		return w.handle100()
+	}
+
 	pdf := make([]int, len(w.pdf))
 	copy(pdf, w.pdf)
 	balance := 100
@@ -96,4 +106,13 @@ func (w *WRR) getCDF(pdf []int) (cdf []int) {
 		cdf[i] = cdf[i-1] + pdf[i]
 	}
 	return cdf
+}
+
+// there is no reason to calculate CDF and recompute PDF's if some field has 100%
+func (w *WRR) handle100() (indexes []int){
+	for i := 0; i < len(w.pdf); i++ {
+		indexes = append(indexes,i)
+	}
+	indexes[0], indexes[w.index100] =  indexes[w.index100], indexes[0]
+	return indexes
 }
