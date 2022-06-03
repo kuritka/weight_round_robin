@@ -61,7 +61,7 @@ func TestPick(t *testing.T) {
 		{"50/50 distribution ", []int{50, 50}, 5},
 		{"one element ", []int{100}, 0},
 		{"twenty elements", []int{5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5}, 3},
-		{"strongly unbalanced", []int{90, 2, 2, 2, 2, 2}, 2},
+		{"strongly unbalanced", []int{90, 2, 2, 2, 2, 2}, 3},
 		{"strongly unbalanced2", []int{1, 99}, 1},
 		{"one zero", []int{100, 0}, 0},
 		{"multiple zeros", []int{100, 0, 0}, 0},
