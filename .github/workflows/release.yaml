@@ -33,5 +33,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_BRANCHES: main
           WITH_V: true
-          DEFAULT_BUMP: patch
+          DEFAULT_BUMP: none
 #          PRERELEASE_SUFFIX: beta

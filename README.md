@@ -1,4 +1,11 @@
 # Weight Round Robin Shuffler
+[![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+[![Go Reference](https://pkg.go.dev/badge/github.com/kuritka/weight_round_robin.svg)](https://pkg.go.dev/github.com/kuritka/weight_round_robin) 
+![Build Status](https://github.com/kuritka/weight_round_robin/actions/workflows/test.yaml/badge.svg?branch=master)
+![Linter](https://github.com/kuritka/weight_round_robin/actions/workflows/lint.yaml/badge.svg?branch=master)
+[![Coverage](http://gocover.io/_badge/github.com/kuritka/weight_round_robin)](http://gocover.io/github.com/kuritka/weight_round_robin)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kuritka/weight_round_robin)](https://goreportcard.com/report/github.com/kuritka/weight_round_robin)
+
 
 This library provides a Weight Round Robin supporting function which achieves both uniformity and consistency.
 
