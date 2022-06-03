@@ -32,7 +32,7 @@ func TestRRWeight(t *testing.T) {
 	}
 
 	for i := 0; i < 1000; i++ {
-		indexes := wrr.Pick()
+		indexes := wrr.PickSlice()
 		fmt.Println(indexes)
 		result[0][indexes[0]]++
 		result[1][indexes[1]]++

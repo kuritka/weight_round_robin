@@ -43,10 +43,10 @@ func NewWRR(pdf []int) (wrr *WRR, err error) {
 	return wrr, nil
 }
 
-// Pick returns slice shuffled by pdf distribution.
+// PickSlice returns slice shuffled by pdf distribution.
 // The item with the highest probability will occur more often
 // at the position that has the highest probability in the PDF
-func (w *WRR) Pick() (indexes []int) {
+func (w *WRR) PickSlice() (indexes []int) {
 	pdf := make([]int, len(w.pdf))
 	copy(pdf, w.pdf)
 	balance := 100
@@ -66,6 +66,11 @@ func (w *WRR) Pick() (indexes []int) {
 		}
 	}
 	return indexes
+}
+
+func (w *WRR) Pick() int {
+	cdf := w.getCDF(w.pdf)
+	return w.pick(cdf, 100)
 }
 
 // pick one index
