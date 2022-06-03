@@ -1,6 +1,13 @@
 ## Weight Round Robin
 
-Weight Round Robin produces indexes by predefined weights in Probability Density Function (PDF).
+This library provides a Weight Round Robin supporting function which achieves both uniformity and consistency.
+
+For detailed information about the concept, you should take a look at the following resources:
+ - [CDF x PDF](https://www.statology.org/cdf-vs-pdf/) 
+ - [What is Weight Round Robin?](https://www.educative.io/edpresso/what-is-the-weighted-round-robin-load-balancing-technique)
+
+
+# Pick Index Usage
 
 If you don't remember [the probability](https://www.statology.org/cdf-vs-pdf/) right now, that's okay.
 PDF is a simple slice that contains percentages. Depending on how the percentages are divided, the function will 
@@ -9,7 +16,8 @@ while it will return 0 or 2 in about 10 out of 100 cases.
 
 **The only condition is that the sum of all values in the PDF is always equal to 100!**
 
-A bit more complicated case is when you need to shuffle the indexes in the array to match the PDF instead of one element. 
+# Pick Slice Of Indexes Usage
+A bit more complex case is when you need to shuffle the indexes in the array to match the PDF instead of one element. 
 The PDF again contains the same percentage distribution, but we want the slice to contain not one index, but the whole 
 vector. For example, for PDF={30,40,20,10} the result will be like this:
 
