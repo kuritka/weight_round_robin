@@ -109,10 +109,10 @@ func (w *WRR) getCDF(pdf []int) (cdf []int) {
 }
 
 // there is no reason to calculate CDF and recompute PDF's if some field has 100%
-func (w *WRR) handle100() (indexes []int){
+func (w *WRR) handle100() (indexes []int) {
 	for i := 0; i < len(w.pdf); i++ {
-		indexes = append(indexes,i)
+		indexes = append(indexes, i)
 	}
-	indexes[0], indexes[w.index100] =  indexes[w.index100], indexes[0]
+	indexes[0], indexes[w.index100] = indexes[w.index100], indexes[0]
 	return indexes
 }

@@ -34,7 +34,7 @@ func TestInit(t *testing.T) {
 		{"out of range value 1", []int{101, 2}, false},
 		{"out of range value 2", []int{30, 40, 20, 10, -10, 10}, false},
 		{"zero", []int{0}, false},
-		{"hundred", []int{0,0,100}, true},
+		{"hundred", []int{0, 0, 100}, true},
 		{"hundred", []int{100, 0}, true},
 		{"hundred", []int{100}, true},
 	}
@@ -62,7 +62,7 @@ func TestPick(t *testing.T) {
 		{"one element ", []int{100}, 0},
 		{"twenty elements", []int{5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5}, 3},
 		{"strongly unbalanced", []int{90, 2, 2, 2, 2, 2}, 2},
-		{"strongly unbalanced2", []int{1,99}, 1},
+		{"strongly unbalanced2", []int{1, 99}, 1},
 		{"one zero", []int{100, 0}, 0},
 		{"multiple zeros", []int{100, 0, 0}, 0},
 		{"multiple zeros", []int{0, 100, 0}, 0},
@@ -86,7 +86,6 @@ func TestPick(t *testing.T) {
 		})
 	}
 }
-
 
 func TestPickVector(t *testing.T) {
 	const n = 1000
@@ -119,7 +118,7 @@ func TestPickVector(t *testing.T) {
 			for i := 0; i < n; i++ {
 
 				indexes := wrr.PickVector()
-				for _,v := range indexes {
+				for _, v := range indexes {
 					assert.True(t, v >= 0 && v < len(test.pdf), "Pick returned index out of range")
 				}
 
@@ -131,7 +130,7 @@ func TestPickVector(t *testing.T) {
 			for i := 0; i < len(test.pdf); i++ {
 				verticalSum := 0
 				horizontalSum := sum(result[i])
-				for _,v := range result {
+				for _, v := range result {
 					verticalSum += v[i]
 				}
 				assert.Equal(t, horizontalSum, n)
