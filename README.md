@@ -3,7 +3,6 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/kuritka/weight_round_robin.svg)](https://pkg.go.dev/github.com/kuritka/weight_round_robin?branch=main) 
 ![Build Status](https://github.com/kuritka/weight_round_robin/actions/workflows/test.yaml/badge.svg?branch=main)
 ![Linter](https://github.com/kuritka/weight_round_robin/actions/workflows/lint.yaml/badge.svg?branch=main)
-#[![Coverage](http://gocover.io/_badge/github.com/kuritka/weight_round_robin)](http://gocover.io/github.com/kuritka/weight_round_robin?branch=main)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kuritka/weight_round_robin)](https://goreportcard.com/report/github.com/kuritka/weight_round_robin?branch=main)
 
 
