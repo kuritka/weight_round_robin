@@ -6,7 +6,8 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/kuritka/weight_round_robin)](https://goreportcard.com/report/github.com/kuritka/weight_round_robin?branch=main)
 
 
-This library provides a Weight Shuffling support function which chieves both performance and simplicity.
+This library provides a Weight Shuffling support function which chieves both performance and simplicity. The functionality 
+is suitable for weight round robin in a distributed environment.
 
 For detailed information about the concept, you should take a look at the following resources:
  - [CDF x PDF](https://www.statology.org/cdf-vs-pdf/) 
@@ -30,9 +31,9 @@ go get github.com/kuritka/wrr
 // pdf requires to be 100% in total.  
 pdf := []int{30, 40, 20, 10}
 // handle error in real code
-wrr, _ := NewWRR(pdf)
+ws, _ := NewWS(pdf)
 // the index is selected from the probability determined by the pdf 
-index := wrr.Pick()
+index := ws.Pick()
 ```
 If you don't remember [the probability](https://www.statology.org/cdf-vs-pdf/) right now, that's okay.
 PDF is a simple slice that contains percentages. Depending on how the percentages are divided, the function will 
@@ -47,7 +48,7 @@ while it will return 0 or 2 in about 10 out of 100 cases.
 // pdf requires to be 100% in total.  
 pdf := []int{30, 40, 20, 10}
 // handle error in real code
-wrr, _ := NewWRR(pdf)
+ws, _ := NewWS(pdf)
 // the result will be slices of the index, which will be "probably" sorted by probability
 indexes := wrr.PickVector()
 ```

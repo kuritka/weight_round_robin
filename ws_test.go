@@ -1,4 +1,4 @@
-package wrr
+package gows
 
 /*
 Copyright 2022 The k8gb Contributors.
@@ -40,7 +40,7 @@ func TestInit(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("%s: %v", test.name, test.pdf), func(t *testing.T) {
-			_, err := NewWRR(test.pdf)
+			_, err := NewWS(test.pdf)
 			if !test.valid {
 				require.Error(t, err)
 				return
@@ -71,7 +71,7 @@ func TestPick(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("%s: %v", test.name, test.pdf), func(t *testing.T) {
-			wrr, err := NewWRR(test.pdf)
+			wrr, err := NewWS(test.pdf)
 			require.NoError(t, err)
 			result := make([]int, len(test.pdf))
 			for i := 0; i < n; i++ {
@@ -107,7 +107,7 @@ func TestPickVector(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("%s: %v", test.name, test.pdf), func(t *testing.T) {
-			wrr, err := NewWRR(test.pdf)
+			wrr, err := NewWS(test.pdf)
 			require.NoError(t, err)
 
 			result := map[int][]int{}
@@ -163,7 +163,7 @@ func checkAllowedDiff(pdf, result []int, sum int, diffPercent int) bool {
 
 //func TestPrintMatrix(t *testing.T) {
 //	pdf := []int{50,50}
-//	wrr, err := NewWRR(pdf)
+//	wrr, err := NewWS(pdf)
 //	if err != nil {
 //		fmt.Println("ERROR:", err)
 //		return
