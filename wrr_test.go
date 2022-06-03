@@ -162,30 +162,30 @@ func checkAllowedDiff(pdf, result []int, sum int, diffPercent int) bool {
 	return true
 }
 
-func TestPrintMatrix(t *testing.T) {
-	pdf := []int{50,50}
-	wrr, err := NewWRR(pdf)
-	if err != nil {
-		fmt.Println("ERROR:", err)
-		return
-	}
-	result := map[int][]int{}
-	for i := 0; i < len(pdf); i++ {
-		result[i] = []int{0, 0, 0, 0}
-	}
-
-	for i := 0; i < 1000; i++ {
-		indexes := wrr.PickVector()
-		fmt.Println(indexes)
-		for q := 0; q< len(pdf); q++ {
-			result[q][indexes[q]]++
-		}
-	}
-
-	fmt.Printf("    [10.0.0.1],[10.1.0.1],[10.2.0.1],[10.3.0.1]\n")
-	fmt.Printf("    %v\n", pdf)
-	fmt.Printf("    -----------------\n")
-	for i := 0; i < len(pdf); i++ {
-		fmt.Printf(" %v. %v \n", i, result[i])
-	}
-}
+//func TestPrintMatrix(t *testing.T) {
+//	pdf := []int{50,50}
+//	wrr, err := NewWRR(pdf)
+//	if err != nil {
+//		fmt.Println("ERROR:", err)
+//		return
+//	}
+//	result := map[int][]int{}
+//	for i := 0; i < len(pdf); i++ {
+//		result[i] = []int{0, 0, 0, 0}
+//	}
+//
+//	for i := 0; i < 1000; i++ {
+//		indexes := wrr.PickVector()
+//		fmt.Println(indexes)
+//		for q := 0; q< len(pdf); q++ {
+//			result[q][indexes[q]]++
+//		}
+//	}
+//
+//	fmt.Printf("    [10.0.0.1],[10.1.0.1],[10.2.0.1],[10.3.0.1]\n")
+//	fmt.Printf("    %v\n", pdf)
+//	fmt.Printf("    -----------------\n")
+//	for i := 0; i < len(pdf); i++ {
+//		fmt.Printf(" %v. %v \n", i, result[i])
+//	}
+//}

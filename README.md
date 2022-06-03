@@ -1,4 +1,4 @@
-# Weight Round Robin
+# Weight Round Robin Shuffler
 
 This library provides a Weight Round Robin supporting function which achieves both uniformity and consistency.
 
@@ -36,6 +36,16 @@ while it will return 0 or 2 in about 10 out of 100 cases.
 **The only condition is that the sum of all values in the PDF is always equal to 100!**
 
 ## PickVector() Usage
+
+```go
+// pdf requires to be 100% in total.  
+pdf := []int{30, 40, 20, 10}
+// handle error in real code
+wrr, _ := NewWRR(pdf)
+// the result will be slices of the index, which will be "probably" sorted by probability
+indexes := wrr.PickVector()
+```
+
 A bit more complex case is when you need to shuffle the indexes in the array to match the PDF instead of one element. 
 The PDF again contains the same percentage distribution, but we want the slice to contain not one index, but the whole 
 vector. For example, for `PDF={30,40,20,10}` the result will be like this:
@@ -118,4 +128,4 @@ The generated wil look like following:
  0. [511 489] 
  1. [489 511] 
 ```
-The address `10.0.0.1` occurred 511 times in `1000` hits at index zero , while 489 times at index 1. 
+The address `10.0.0.1` occurred 511 times in `1000` hits at index zero , while 489 times at index 1.
