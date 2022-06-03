@@ -1,10 +1,44 @@
-# wrr DEMO
+## Weight Round Robin
 
-Weight round robin alghoritm produces indexes by predefined weights.
+Weight Round Robin produces indexes by predefined weights in Probability Density Function (PDF).
 
-See PDF [30 40 20 10]: The item with the highest probability (index 01) will occur more often at the 01 position that has the highest probability in the PDF
+If you don't remember [the probability](https://www.statology.org/cdf-vs-pdf/) right now, that's okay.
+PDF is a simple slice that contains percentages. Depending on how the percentages are divided, the function will 
+return an index. For example, for PDF={5,90,5}, the function will return 1 in about 90 out of 100 cases, 
+while it will return 0 or 2 in about 10 out of 100 cases.
+
+**The only condition is that the sum of all values in the PDF is always equal to 100!**
+
+A bit more complicated case is when you need to shuffle the indexes in the array to match the PDF instead of one element. 
+The PDF again contains the same percentage distribution, but we want the slice to contain not one index, but the whole 
+vector. For example, for PDF={30,40,20,10} the result will be like this:
+
+```
+[2,1,3,0]
+[0,1,3,2]
+[0,1,2,3]
+...
+```
+the function returns an index slice such that index0 will be represented in the zero position in about 30% of cases, 
+index1 will be in the first position in about 40% of cases, etc.
+
+
+
+## Conclusion
+This library is ideal for Weight RoundRobin. Imagine you need to balance these addresses (can be applied to whole groups 
+of addresses):
+```shell
+# dig wrr.cloud.example.com +short
+10.1.0.1
+10.0.0.1
+10.3.0.1
+10.2.0.1
+```
+
+We want to shuffle the addresses in PDF order [30 40 20 10]: The item with the highest probability (index 01 = 40%) will
+occur more often at the 01 position that has the highest probability in the PDF.
+
 ```txt
-    [10.0.0.1],[10.1.0.1],[10.2.0.1],[10.3.0.1]
     [30 40 20 10]
     -----------------
  0. [289 401 200 110] 
@@ -12,165 +46,14 @@ See PDF [30 40 20 10]: The item with the highest probability (index 01) will occ
  2. [291 216 307 186] 
  3. [122 68 235 575] 
 ```
-See what DNS query returns :
 
-```shell
-# dig @localhost -p 1053 wrr.cloud.example.com +short
-10.1.0.1
-10.0.0.1
-10.3.0.1
-10.2.0.1
-```
-
-
-The example matrix was created by 1000x hitting the list of IP adresses with help of WRR. 
-The IP at zero index (10.0.0.1) is used 289x on the first position returned by DNS server.
+The example matrix was created by 1000x hitting the list of IP adresses with help of WRR.
+If we map the indexes to a slice with IP addresses (or groups of IP addresses) the IP at 
+zero index (10.0.0.1) is used 289x on the first position returned by DNS server.
 Also 298x used on the second position returned by DNS server.
 
 The address (10.3.0.1) has only 10% probability of to be chosen. It occurs only 110x (cca 10%) on the zero position 
 while 575x on the last position. 
 
-The index was calculated 1000 times. When you add individual columns or rows, the result is always 1000, so everything is OK
-
-# WRR From Query To k8gb 
-
-## DNS Query
-```shell
-# dig @localhost -p 1053 roundrobin.cloud.example.com +tcp +nostats +noedns +nocomments
-;roundrobin.cloud.example.com.  IN      A
-roundrobin.cloud.example.com. 30 IN     A       172.18.0.8
-roundrobin.cloud.example.com. 30 IN     A       172.18.0.5
-roundrobin.cloud.example.com. 30 IN     A       172.18.0.6
-roundrobin.cloud.example.com. 30 IN     A       172.18.0.9
-```
-
-```shell
-# dig amazon.com  +nostats +noedns +nocomments
-;amazon.com.                    IN      A
-amazon.com.             47      IN      A       176.32.103.205
-amazon.com.             47      IN      A       54.239.28.85
-amazon.com.             47      IN      A       205.251.242.103
-```
-
-```shell
-# dig app.cloud.example.com +nostats +noedns +nocomments
-;app.cloud.example.com.                    IN      A
-app.cloud.example.com.             300      IN      A       10.0.0.2
-app.cloud.example.com.             300      IN      A       10.1.1.2
-app.cloud.example.com.             300      IN      A       10.1.1.1
-app.cloud.example.com.             300      IN      A       10.10.10.10
-app.cloud.example.com.             300      IN      A       10.0.0.1
-```
-
-## CoreDNS side
-
-```shell
-# example configuration. For real k8gb config see: 
-# https://github.com/k8gb-io/k8gb/blob/master/chart/k8gb/templates/coredns-cm.yaml
-app.cloud.example.com:8053 {
-    hosts etchosts
-    log
-    loadbalance weight_round_robin
-}
-# 1 - 0.8 - 0.2 = 0 everything out of range is divided by a 
-# probability of 0%
-
-amazon.com {
-    hosts etchosts
-    log
-    loadbalance weight_round_robin {
-    }
-}
-# 1 - 0.6 = 0.4 everything out of 176.32.103.205 is divided by a
-# probability 40% (54.239.28.85 = 20%, 205.251.242.103 = 20%)
-```
-
-## k8gb side
-```yaml
-# Cluster 1
-# 10.0.0.1
-# 10.0.0.2
-apiVersion: ohmyglb.absa.oss/v1beta1
-kind: Gslb
-metadata:
-  name: app-gslb
-  namespace: test-gslb
-spec:
-  ingress:
-    rules:
-      - host: app.cloud.example.com
-        http:
-          paths:
-            - backend:
-                serviceName: app
-                servicePort: http
-              path: /
-  strategy: roundRobin 
-    weight: 80%
-```
-
-```yaml
-# Cluster 2
-# 10.1.1.1
-# 10.1.1.2
-apiVersion: ohmyglb.absa.oss/v1beta1
-kind: Gslb
-metadata:
-  name: app-gslb
-  namespace: test-gslb
-spec:
-  ingress:
-    rules:
-      - host: app.cloud.example.com
-        http:
-          paths:
-            - backend:
-                serviceName: app
-                servicePort: http
-              path: /
-  strategy: roundRobin 
-    weight: 20%
-```
-
-```yaml
-# Cluster 3
-# 10.10.10.10
-apiVersion: ohmyglb.absa.oss/v1beta1
-kind: Gslb
-metadata:
-  name: app-gslb
-  namespace: test-gslb
-spec:
-  ingress:
-    rules:
-      - host: app.cloud.example.com
-        http:
-          paths:
-            - backend:
-                serviceName: app
-                servicePort: http
-              path: /
-  strategy: roundRobin 
- # not sure what to set here atm. 
-
-# Expected result
-The 1000x executed `dig app.cloud.example.com` would return
-
-```
-# ± 800x 
-10.0.0.1
-10.0.0.2
-10.1.1.1
-10.1.1.2
-10.10.10.10
-
-
-# ±200x 
-10.1.1.1
-10.1.1.2
-10.0.0.1
-10.0.0.2
-10.10.10.10
-```
-
-_There are several corner-cases, getting out of 0% probability is one of them (10.10.10.10). At this point I put the address at the end of the list, but it can be completely discarded (just create some switch to leave the 0% address or discard it)._  
+The index was calculated 1000 times. When you sum individual columns or rows, the result is always 1000x so everything 
+is  mathematically OK
