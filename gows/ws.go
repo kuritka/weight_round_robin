@@ -60,7 +60,7 @@ func (w *WS) PickVector() (indexes []int) {
 
 	pdf := make([]int, len(w.pdf))
 	copy(pdf, w.pdf)
-	balance := 100
+	balance := 101
 	for i := 0; i < len(pdf); i++ {
 		cdf := w.getCDF(pdf)
 		index := w.pick(cdf, balance)
